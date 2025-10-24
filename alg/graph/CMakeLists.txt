@@ -18,5 +18,8 @@ add_executable(dynagraph dynagraph.cpp)
 # Executável de testes para o dynagraph C++
 add_executable(test-dynagraph test_dynagraph.cpp)
 
+# Executável de conversão para Matriz de Adjacências
+add_executable(adjacency-matrix adjacency_matrix.cpp)
+
 # Executável do tree (C++)
 add_executable(tree tree.cpp)
