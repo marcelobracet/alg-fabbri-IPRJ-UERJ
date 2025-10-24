@@ -9,8 +9,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
-# Executável do dynagraph (C)
-add_executable(dynagraph dynagraph.c)
+# Executável do dynagraph original (C)
+add_executable(dynagraph-c dynagraph.c)
+
+# Executável do dynagraph com C++ e OOP
+add_executable(dynagraph dynagraph.cpp)
+
+# Executável de testes para o dynagraph C++
+add_executable(test-dynagraph test_dynagraph.cpp)
 
 # Executável do tree (C++)
 add_executable(tree tree.cpp)
