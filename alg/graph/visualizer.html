@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualizador de Grafos - DynaGraph</title>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
+    ></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+
+      .main-content {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .controls {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        height: fit-content;
+      }
+
+      .controls h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+      }
+
+      .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        color: white;
+      }
+
+      .btn-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+
+      .input-group input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      #mynetwork {
+        width: 100%;
+        height: 600px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        background: #fafafa;
+      }
+
+      .info-panel {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+      }
+
+      .info-panel h4 {
+        color: #667eea;
+        margin-bottom: 10px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-card .number {
+        font-size: 2em;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .stat-card .label {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 5px;
+      }
+
+      .example-graphs {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .log-panel {
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+      }
+
+      .log-entry {
+        margin-bottom: 5px;
+        padding: 3px 0;
+        border-bottom: 1px solid #4a5568;
+      }
+
+      .log-entry:last-child {
+        border-bottom: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🌐 Visualizador de Grafos DynaGraph</h1>
+        <p>Visualização interativa de grafos dinâmicos - IPRJ/UERJ</p>
+      </div>
+
+      <div class="main-content">
+        <div class="controls">
+          <h3>📊 Grafos de Exemplo</h3>
+          <div class="example-graphs">
+            <button class="btn-primary" onclick="loadDynaGraphExample()">
+              🏙️ Grafo Cidades RJ
+            </button>
+            <button class="btn-success" onclick="loadSimpleGraph()">
+              🔷 Grafo Simples
+            </button>
+            <button class="btn-warning" onclick="loadCompleteGraph()">
+              🔶 Grafo Completo K5
+            </button>
+          </div>
+
+          <h3 style="margin-top: 30px">➕ Adicionar Nó</h3>
+          <div class="input-group">
+            <label>Nome do Nó:</label>
+            <input type="text" id="nodeName" placeholder="Ex: São Paulo" />
+          </div>
+          <button class="btn-success" onclick="addNode()">Adicionar Nó</button>
+
+          <h3 style="margin-top: 30px">🔗 Adicionar Conexão</h3>
+          <div class="input-group">
+            <label>De (ID):</label>
+            <input type="number" id="fromNode" placeholder="Ex: 1" />
+          </div>
+          <div class="input-group">
+            <label>Para (ID):</label>
+            <input type="number" id="toNode" placeholder="Ex: 2" />
+          </div>
+          <div class="input-group">
+            <label>Peso:</label>
+            <input type="number" id="edgeWeight" placeholder="Ex: 50" />
+          </div>
+          <button class="btn-primary" onclick="addEdge()">
+            Adicionar Conexão
+          </button>
+
+          <h3 style="margin-top: 30px">🗑️ Remover</h3>
+          <div class="button-group">
+            <button class="btn-danger" onclick="removeSelectedNode()">
+              Remover Nó Selecionado
+            </button>
+            <button class="btn-danger" onclick="clearGraph()">
+              Limpar Tudo
+            </button>
+          </div>
+
+          <h3 style="margin-top: 30px">💾 Exportar</h3>
+          <button class="btn-warning" onclick="exportGraph()">
+            Exportar como JSON
+          </button>
+        </div>
+
+        <div>
+          <div id="mynetwork"></div>
+
+          <div class="info-panel">
+            <h4>📈 Estatísticas do Grafo</h4>
+            <div class="stats">
+              <div class="stat-card">
+                <div class="number" id="nodeCount">0</div>
+                <div class="label">Nós</div>
+              </div>
+              <div class="stat-card">
+                <div class="number" id="edgeCount">0</div>
+                <div class="label">Conexões</div>
+              </div>
+              <div class="stat-card">
+                <div class="number" id="totalWeight">0</div>
+                <div class="label">Peso Total</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="log-panel" id="logPanel">
+            <div class="log-entry">
+              🟢 Sistema iniciado - Pronto para visualizar grafos!
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      // Container do grafo
+      let container = document.getElementById("mynetwork");
+
+      // Dados do grafo
+      let nodes = new vis.DataSet([]);
+      let edges = new vis.DataSet([]);
+
+      // Configuração do grafo
+      let data = {
+        nodes: nodes,
+        edges: edges,
+      };
+
+      let options = {
+        nodes: {
+          shape: "dot",
+          size: 25,
+          font: {
+            size: 16,
+            color: "#ffffff",
+            face: "arial",
+          },
+          borderWidth: 3,
+          borderWidthSelected: 5,
+          color: {
+            border: "#667eea",
+            background: "#764ba2",
+            highlight: {
+              border: "#f093fb",
+              background: "#f5576c",
+            },
+          },
+        },
+        edges: {
+          width: 3,
+          color: {
+            color: "#667eea",
+            highlight: "#f5576c",
+          },
+          font: {
+            size: 14,
+            align: "middle",
+            background: "white",
+            strokeWidth: 2,
+            strokeColor: "white",
+          },
+          smooth: {
+            type: "continuous",
+            roundness: 0.5,
+          },
+          arrows: {
+            to: {
+              enabled: false,
+            },
+          },
+        },
+        physics: {
+          enabled: true,
+          barnesHut: {
+            gravitationalConstant: -30000,
+            springConstant: 0.001,
+            springLength: 200,
+          },
+          stabilization: {
+            iterations: 100,
+          },
+        },
+        interaction: {
+          hover: true,
+          dragNodes: true,
+          dragView: true,
+          zoomView: true,
+        },
+      };
+
+      // Cria a rede
+      let network = new vis.Network(container, data, options);
+
+      // Variável para controlar ID dos nós
+      let nodeIdCounter = 1;
+
+      // Log de eventos
+      function addLog(message) {
+        const logPanel = document.getElementById("logPanel");
+        const logEntry = document.createElement("div");
+        logEntry.className = "log-entry";
+        const timestamp = new Date().toLocaleTimeString();
+        logEntry.textContent = `[${timestamp}] ${message}`;
+        logPanel.insertBefore(logEntry, logPanel.firstChild);
+
+        // Manter apenas as últimas 20 entradas
+        while (logPanel.children.length > 20) {
+          logPanel.removeChild(logPanel.lastChild);
+        }
+      }
+
+      // Atualizar estatísticas
+      function updateStats() {
+        const nodeCount = nodes.length;
+        const edgeCount = edges.length;
+        let totalWeight = 0;
+
+        edges.forEach((edge) => {
+          totalWeight += parseInt(edge.label) || 0;
+        });
+
+        document.getElementById("nodeCount").textContent = nodeCount;
+        document.getElementById("edgeCount").textContent = edgeCount;
+        document.getElementById("totalWeight").textContent = totalWeight;
+      }
+
+      // Carrega o grafo do dynagraph.c
+      function loadDynaGraphExample() {
+        nodes.clear();
+        edges.clear();
+        nodeIdCounter = 1;
+
+        // Adiciona os nós (cidades do RJ)
+        nodes.add([
+          { id: 1, label: "Petrópolis" },
+          { id: 2, label: "Teresópolis" },
+          { id: 3, label: "Niterói" },
+          { id: 4, label: "Rio" },
+          { id: 5, label: "Friburgo" },
+        ]);
+
+        // Adiciona as conexões com pesos
+        edges.add([
+          { from: 1, to: 2, label: "50" },
+          { from: 1, to: 4, label: "65" },
+          { from: 2, to: 4, label: "100" },
+          { from: 2, to: 5, label: "75" },
+          { from: 3, to: 4, label: "15" },
+          { from: 3, to: 5, label: "120" },
+          { from: 4, to: 5, label: "140" },
+        ]);
+
+        nodeIdCounter = 6;
+        updateStats();
+        addLog("✅ Grafo das cidades do RJ carregado (do dynagraph.c)");
+      }
+
+      // Grafo simples
+      function loadSimpleGraph() {
+        nodes.clear();
+        edges.clear();
+        nodeIdCounter = 1;
+
+        nodes.add([
+          { id: 1, label: "A" },
+          { id: 2, label: "B" },
+          { id: 3, label: "C" },
+          { id: 4, label: "D" },
+        ]);
+
+        edges.add([
+          { from: 1, to: 2, label: "10" },
+          { from: 2, to: 3, label: "20" },
+          { from: 3, to: 4, label: "30" },
+          { from: 4, to: 1, label: "40" },
+        ]);
+
+        nodeIdCounter = 5;
+        updateStats();
+        addLog("✅ Grafo simples carregado");
+      }
+
+      // Grafo completo K5
+      function loadCompleteGraph() {
+        nodes.clear();
+        edges.clear();
+        nodeIdCounter = 1;
+
+        nodes.add([
+          { id: 1, label: "1" },
+          { id: 2, label: "2" },
+          { id: 3, label: "3" },
+          { id: 4, label: "4" },
+          { id: 5, label: "5" },
+        ]);
+
+        let weight = 10;
+        for (let i = 1; i <= 5; i++) {
+          for (let j = i + 1; j <= 5; j++) {
+            edges.add({ from: i, to: j, label: weight.toString() });
+            weight += 5;
+          }
+        }
+
+        nodeIdCounter = 6;
+        updateStats();
+        addLog("✅ Grafo completo K5 carregado");
+      }
+
+      // Adicionar nó
+      function addNode() {
+        const nodeName = document.getElementById("nodeName").value.trim();
+        if (!nodeName) {
+          alert("Por favor, digite um nome para o nó!");
+          return;
+        }
+
+        nodes.add({
+          id: nodeIdCounter,
+          label: nodeName,
+        });
+
+        addLog(`➕ Nó adicionado: ${nodeName} (ID: ${nodeIdCounter})`);
+        nodeIdCounter++;
+        document.getElementById("nodeName").value = "";
+        updateStats();
+      }
+
+      // Adicionar conexão
+      function addEdge() {
+        const from = parseInt(document.getElementById("fromNode").value);
+        const to = parseInt(document.getElementById("toNode").value);
+        const weight = document.getElementById("edgeWeight").value || "0";
+
+        if (!from || !to) {
+          alert("Por favor, preencha os IDs dos nós!");
+          return;
+        }
+
+        if (!nodes.get(from) || !nodes.get(to)) {
+          alert("Um ou ambos os nós não existem!");
+          return;
+        }
+
+        edges.add({
+          from: from,
+          to: to,
+          label: weight,
+        });
+
+        addLog(`🔗 Conexão adicionada: ${from} ↔ ${to} (peso: ${weight})`);
+        document.getElementById("fromNode").value = "";
+        document.getElementById("toNode").value = "";
+        document.getElementById("edgeWeight").value = "";
+        updateStats();
+      }
+
+      // Remover nó selecionado
+      function removeSelectedNode() {
+        const selectedNodes = network.getSelectedNodes();
+        if (selectedNodes.length === 0) {
+          alert("Selecione um nó para remover!");
+          return;
+        }
+
+        selectedNodes.forEach((nodeId) => {
+          const node = nodes.get(nodeId);
+          if (node) {
+            // Remove as conexões associadas
+            const connectedEdges = network.getConnectedEdges(nodeId);
+            edges.remove(connectedEdges);
+
+            // Remove o nó
+            nodes.remove(nodeId);
+            addLog(`🗑️ Nó removido: ${node.label} (ID: ${nodeId})`);
+          }
+        });
+
+        updateStats();
+      }
+
+      // Limpar grafo
+      function clearGraph() {
+        if (confirm("Tem certeza que deseja limpar todo o grafo?")) {
+          nodes.clear();
+          edges.clear();
+          nodeIdCounter = 1;
+          updateStats();
+          addLog("🗑️ Grafo completamente limpo");
+        }
+      }
+
+      // Exportar grafo como JSON
+      function exportGraph() {
+        const graphData = {
+          nodes: nodes.get(),
+          edges: edges.get(),
+        };
+
+        const dataStr = JSON.stringify(graphData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "graph_export.json";
+        link.click();
+
+        addLog("💾 Grafo exportado como JSON");
+      }
+
+      // Event listeners
+      network.on("selectNode", function (params) {
+        if (params.nodes.length > 0) {
+          const node = nodes.get(params.nodes[0]);
+          addLog(`👆 Nó selecionado: ${node.label} (ID: ${node.id})`);
+        }
+      });
+
+      network.on("selectEdge", function (params) {
+        if (params.edges.length > 0) {
+          const edge = edges.get(params.edges[0]);
+          addLog(
+            `👆 Conexão selecionada: ${edge.from} ↔ ${edge.to} (peso: ${edge.label})`
+          );
+        }
+      });
+
+      // Carrega o grafo inicial
+      loadDynaGraphExample();
+    </script>
+  </body>
+</html>
