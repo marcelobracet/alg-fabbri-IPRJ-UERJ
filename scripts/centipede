@@ -246,20 +246,29 @@ move
 while :
 do
    read -s -n 1 key
-   case "$key" in
-   k)   DIRECTION="u";;
-   j)   DIRECTION="d";;
-   h)   DIRECTION="l";;
-   l)   DIRECTION="r";;
-   x)   tput cup $COLS 0
-        echo "Quitting..."
-        tput cvvis
-        stty echo
-        tput reset
-        printf "Bye Bye!\n"
-        trap exit ALRM
-        sleep $DELAY
-        exit 0
-        ;;
-   esac
+   if [ "$key" = $'\x1b' ]; then
+      read -s -n 1 key2
+      if [ "$key2" = '[' ]; then
+         read -s -n 1 key3
+         case "$key3" in
+         A)   DIRECTION="u";;  # Seta para cima
+         B)   DIRECTION="d";;  # Seta para baixo
+         C)   DIRECTION="r";;  # Seta para direita
+         D)   DIRECTION="l";;  # Seta para esquerda
+         esac
+      fi
+   else
+      case "$key" in
+      x)   tput cup $COLS 0
+           echo "Quitting..."
+           tput cvvis
+           stty echo
+           tput reset
+           printf "Bye Bye!\n"
+           trap exit ALRM
+           sleep $DELAY
+           exit 0
+           ;;
+      esac
+   fi
 done

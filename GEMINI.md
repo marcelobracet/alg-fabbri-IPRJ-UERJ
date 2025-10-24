@@ -1,6 +1,4 @@
 # Fast C projects
-This file is geared towards GEMINI AI for use with gemini-cli.
-We write it in English as it consumes less tokens from the AI API.
 
 ## Description
 We will be coding high-performance, fast code that usually consists of few
@@ -10,98 +8,11 @@ times per second inside a bigger project such as videogames, video processing,
 etc. The downstream application we target is real-time. The generated assembly must be
 easy to match to the sourcecode by a human.
 
-## Programming Language
-- All projects we ask in this folder are in C/C++, except for small scripts.
-
-## Repository location
-The main repository is:
-http://github.com/rfabbri/alg-fabbri-IPRJ-UERJ
-
-There are several forks by the participants/students, but the above is the main
-one and the aggregator of all the other ones through git submodules
-
-## Configuring and compiling
-
-### After cloning
-
-git submodule update --init --recursive
-
-### Building (Human workflow)
-
-```
-ccmake .           # <-- type this in the project root folder (toplevel folder)
-```
-
-Then press the 'c' key for **c**onfiguring.
-
-Press it repeatedly until the 'g' option appears for **g**enerate.
-
-Press 'g', then
-```
-make
-```
-
-### Running tests with gooogle test
+## Running tests with gooogle test
 make test
 
-#### Test files
-You can examine what files the test runs with pass/fail
-by searching inside folders called `tests`, for instance:
-
-```
-find . -name 'tests'          # will list all tests
-```
-
-### Running timing benchmark with google benchmark
-make eval
-
-When you do a git push, performance results will be built as a github action and
-performace plots are available at:
-
-https://rfabbri.github.io/alg-fabbri-IPRJ-UERJ/dev/bench/
-
-Check out the Action tab in github to see if the benchmark has been run.
-
-## Folder structure
-    *aulas/* notas de aula: previsao do que sera cada aula pratica, e um diario
-                            do que foi coberto em aula
-    *config/* arquivos de configuracao do shell, IA/LLM, uteis ao aluno.
-
-    *alg/*
-    └── merge
-        ├── sorted_merge_3way.cpp : implementation of an algorithm(s)
-        ├── sorted_merge_3way.h   : header / API interface
-        ├── cmd/                  : commandline CLI for the algorithm(s)
-        ├── benchmark             : folder with command to benchmark the algorithm(s)
-        └── tests                 : folder with command to test the algorithm(s)
-
-### Benchmark statistics plots
-If you want to see plots for your results,
-after you push to your fork, go to Github,
-go to the course project page,
-tab Actions to see the stats from the server.
-
-Then you can go to the project webpage by enabling github pages,
-you will see the plots for the projects on github.
-
-If you just want to see everybody's results, 
-go to rfabbri/
-
-#### Benchark aarchitecture details
-Benchmark works with google benchmark generating a benchmark executable from C++
-benchmark, which can output JSON to be plotted on your favorite software.
-
-C++ --> JSON --> Plots in branch gh-pages index.html
-
-The benchmark is plotted by default by a github action every time a new commit
-is pusshed. Github runs the benchmark on a standar computer, then outputs the
-resuls to the gh-pages branch, with data.js having the benchmark data.
-Currently the plot code is in index.html, and the plot can be accessed either
-by pulling the gh-pages branch after a benchmark and opening index.html in the
-broser, or by visualizing the plots in github at:
-
-http://rfabbri.github.io/alg-fabbri-IPRJ-UERJ/dev/bench/
-
+## Programming Language
+- All projects we ask in this folder are in C/C++
 
 ## C Coding Style
 - Follow K&R style closely, the one in ANSI C programming language
