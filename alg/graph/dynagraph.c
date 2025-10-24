@@ -71,8 +71,26 @@ int main() { // monta um grafo e testa
  liga(nos+2, nos+4, 120);
  liga(nos+3, nos+4, 140);
 
+  printf("\n=== ANTES DE DELETAR O NÓ RIO ===\n");
+  printf("Conexões de Petropolis:\n");
+  for (lista_ptr v = nos[0].conexoes; v != NULL; v = v->next)
+    printf("  -> %s (peso %d)\n", v->no->nome, v->peso);
+  
+  printf("\nConexões de Niteroi:\n");
+  for (lista_ptr v = nos[2].conexoes; v != NULL; v = v->next)
+    printf("  -> %s (peso %d)\n", v->no->nome, v->peso);
 
-/*  deleta_no_grafo(nos+3); // deleta Rio*/
+  deleta_no_grafo(nos+3); // deleta Rio
+
+  printf("\n=== APÓS DELETAR O NÓ RIO ===\n");
+  printf("Conexões de Petropolis:\n");
+  for (lista_ptr v = nos[0].conexoes; v != NULL; v = v->next)
+    printf("  -> %s (peso %d)\n", v->no->nome, v->peso);
+  
+  printf("\nConexões de Niteroi:\n");
+  for (lista_ptr v = nos[2].conexoes; v != NULL; v = v->next)
+    printf("  -> %s (peso %d)\n", v->no->nome, v->peso);
+  printf("\n");
 
   renomeia_friburgo(nos+0);
   no_ptr nos_componente[MAX_NUM_NOS];
