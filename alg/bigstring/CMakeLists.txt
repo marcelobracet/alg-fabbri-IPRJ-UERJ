@@ -15,3 +15,6 @@ target_link_libraries(test-bigstring bigstring)
 add_executable(bigstring-example example.cpp)
 target_link_libraries(bigstring-example bigstring)
 
+add_executable(demo-professor demo_professor.cpp)
+target_link_libraries(demo-professor bigstring)
+
