@@ -1,25 +1,7 @@
-/*
- * =====================================================================================
- * 
- *        Filename:  bigstring.cpp
- * 
- *     Description:  Implementação do BigString - estrutura ligada de blocos textuais
- * 
- *         Version:  1.0
- *         Created:  2025
- *        Compiler:  g++
- * 
- * =====================================================================================
- */
-
 #include "bigstring.h"
 #include <cstdlib>
 #include <algorithm>
 #include <stdexcept>
-
-// =====================================================================================
-// IMPLEMENTAÇÃO: BigString (Representação com ponteiros)
-// =====================================================================================
 
 BigString::BigString() : head(nullptr), tail(nullptr), total_size(0) {}
 
@@ -89,22 +71,17 @@ std::vector<size_t> BigString::getCumulativeSizes() const {
     return cumulative;
 }
 
-// Busca binária para encontrar o bloco que contém o caractere na posição i
-// Retorna: (nó, offset dentro do bloco)
 std::pair<BigStringNodePtr*, size_t> BigString::findBlock(size_t i) const {
     if (i >= total_size || !head) {
         return {nullptr, 0};
     }
     
-    // Tabela de tamanhos cumulativos (vetor ordenado)
     std::vector<size_t> cumulative = getCumulativeSizes();
     
     if (cumulative.empty()) {
         return {nullptr, 0};
     }
     
-    // Busca binária: encontrar o menor índice onde cumulative[j] > i
-    // Isso significa que o caractere i está no bloco j
     size_t left = 0;
     size_t right = cumulative.size();
     size_t block_index = 0;
@@ -120,16 +97,13 @@ std::pair<BigStringNodePtr*, size_t> BigString::findBlock(size_t i) const {
         }
     }
     
-    // Se não encontrou, está no último bloco
     if (block_index >= cumulative.size()) {
         block_index = cumulative.size() - 1;
     }
     
-    // Encontra o nó correspondente e calcula o offset
     BigStringNodePtr* current = head;
     size_t offset = i;
     
-    // Subtrai os tamanhos dos blocos anteriores
     for (size_t j = 0; j < block_index && current; j++) {
         offset -= current->block_size;
         current = current->next;
@@ -227,7 +201,6 @@ void BigString::inserir(BigString& A, size_t i) {
         return;
     }
     
-    // Copiar todos os nós de A
     BigStringNodePtr* currentA = A.head;
     BigStringNodePtr* firstNew = nullptr;
     BigStringNodePtr* lastNew = nullptr;
@@ -248,7 +221,6 @@ void BigString::inserir(BigString& A, size_t i) {
     
     if (!firstNew) return;
     
-    // Inserir a cadeia de nós na posição i
     if (i == 0) {
         lastNew->next = head;
         head = firstNew;
