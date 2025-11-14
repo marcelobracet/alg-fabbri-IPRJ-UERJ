@@ -1,20 +1,3 @@
-/*
- * =====================================================================================
- * 
- *        Filename:  bigstring.h
- * 
- *     Description:  BigString - estrutura ligada de blocos textuais
- *                   Duas representações: ponteiros e array fixo
- * 
- *         Version:  1.0
- *         Created:  2025
- *        Compiler:  g++
- * 
- *          Author:  IPRJ/UERJ
- * 
- * =====================================================================================
- */
-
 #ifndef BIGSTRING_H
 #define BIGSTRING_H
 
@@ -66,35 +49,25 @@ public:
     // Destrutor
     ~BigString();
     
-    // Construtor de cópia (desabilitado por simplicidade)
     BigString(const BigString&) = delete;
     BigString& operator=(const BigString&) = delete;
     
-    // Adiciona texto ao final
     void append(const char* text);
     
-    // Concatena outra BigString
     void concat(BigString& other);
     
-    // Insere string simples na posição i
     void inserirSimples(const char* text, size_t i);
     
-    // Insere BigString A na posição i
     void inserir(BigString& A, size_t i);
     
-    // Acesso aleatório (random access) - operator[]
     char operator[](size_t i) const;
     
-    // Retorna tamanho total
     size_t tamanho() const { return total_size; }
     
-    // Imprime a string completa
     void print() const;
     
-    // Retorna como string C++ (para debug)
     std::string toString() const;
     
-    // Retorna tabela de tamanhos cumulativos (para busca binária)
     std::vector<size_t> getCumulativeSizes() const;
 
 private:
@@ -102,29 +75,19 @@ private:
     BigStringNodePtr* tail;       // Último nó (para append rápido)
     size_t total_size;            // Tamanho total da string
     
-    // Busca binária: encontra o bloco que contém o caractere na posição i
-    // Retorna: (nó, offset dentro do bloco)
     std::pair<BigStringNodePtr*, size_t> findBlock(size_t i) const;
     
-    // Cria um novo nó com texto
     BigStringNodePtr* createNode(const char* text, size_t len);
     
-    // Insere nó após um nó específico
     void insertNodeAfter(BigStringNodePtr* after, BigStringNodePtr* newNode);
 };
 
-// =====================================================================================
-// CLASSE BigStringFixed - Representação com array fixo
-// =====================================================================================
 class BigStringFixed {
 public:
-    // Construtor
     BigStringFixed();
     
-    // Destrutor
     ~BigStringFixed();
     
-    // Construtor de cópia (desabilitado)
     BigStringFixed(const BigStringFixed&) = delete;
     BigStringFixed& operator=(const BigStringFixed&) = delete;
     
